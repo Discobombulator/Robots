@@ -5,65 +5,48 @@ import java.io.*;
 import java.util.Arrays;
 
 /**
- * WindowsLocation отвечает за сохранение и загрузку состояния окон
- * (GameWindow и LogWindow) в файл конфигурации state.cfg.
+ * WindowsSaver отвечает за сохранение и загрузку состояния окон
+ * (GameWindow, LogWindow и RobotInfoWindow) в файл конфигурации state.cfg.
  */
 public class WindowsSaver {
-    /**
-     * Формирует массив данных для Window.
-     * Массив содержит координаты X, Y, ширину, высоту и состояние окна (1 - развернуто, 0 - свернуто).
-     *
-     * @return массив с данными GameWindow
-     */
     public int[] saveWidowData(JInternalFrame frame) {
-        int windowState;
-
-        if (frame.isIcon()) {
-            windowState = 0;
-        } else {
-            windowState = 1;
-        }
+        int windowState = frame.isIcon() ? 0 : 1;
         return new int[]{
                 frame.getX(),
                 frame.getY(),
                 frame.getWidth(),
                 frame.getHeight(),
-                windowState};
+                windowState
+        };
     }
 
     /**
-     * Сохраняет данные о состоянии GameWindow и LogWindow в файл state.cfg.
-     *
-     * @param gameWindow окно с игровым полем
-     * @param logWindow  окно протокола работы
-     * @throws IOException если возникает ошибка ввода-вывода при записи файла
+     * Сохраняет данные о состоянии GameWindow, LogWindow и RobotInfoWindow в файл state.cfg.
      */
-    public void saveToFile(GameWindow gameWindow, LogWindow logWindow) throws IOException {
+    public void saveToFile(GameWindow gameWindow, LogWindow logWindow, RobotInfoWindow infoWindow) throws IOException {
         int[] gameData = gameWindow.getGameData();
         int[] logData = logWindow.getLogData();
+        int[] infoData = infoWindow.getWindowData();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("state.cfg"))) {
             writer.write("gameWindow=" + Arrays.toString(gameData));
             writer.newLine();
             writer.write("logWindow=" + Arrays.toString(logData));
             writer.newLine();
+            writer.write("infoWindow=" + Arrays.toString(infoData));
+            writer.newLine();
         }
     }
 
     /**
-     * Загружает данные о состоянии GameWindow и LogWindow из файла state.cfg.
-     * После загрузки устанавливает параметры расположения, размера и видимости окон.
-     *
-     * @param gameWindow окно с игровым полем
-     * @param logWindow  окно протокола работы
+     * Загружает данные о состоянии GameWindow, LogWindow и RobotInfoWindow из файла state.cfg.
      */
-    public void loadFromFile(GameWindow gameWindow, LogWindow logWindow) throws IOException {
+    public void loadFromFile(GameWindow gameWindow, LogWindow logWindow, RobotInfoWindow infoWindow) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader("state.cfg"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("gameWindow=")) {
                     String gameDataStr = line.substring("gameWindow=".length());
                     int[] gameData = parseData(gameDataStr);
-                    // Устанавливаем данные в объект GameWindow и обновляем его параметры:
                     gameWindow.setGameData(gameData);
                     gameWindow.setLocation(gameData[0], gameData[1]);
                     gameWindow.setSize(gameData[2], gameData[3]);
@@ -71,19 +54,21 @@ public class WindowsSaver {
                 } else if (line.startsWith("logWindow=")) {
                     String logDataStr = line.substring("logWindow=".length());
                     int[] logData = parseData(logDataStr);
-                    // Устанавливаем данные в объект LogWindow и обновляем его параметры:
                     logWindow.setLogData(logData);
                     logWindow.setLocation(logData[0], logData[1]);
                     logWindow.setSize(logData[2], logData[3]);
                     logWindow.setVisible(logData[4] == 1);
+                } else if (line.startsWith("infoWindow=")) {
+                    String infoDataStr = line.substring("infoWindow=".length());
+                    int[] infoData = parseData(infoDataStr);
+                    infoWindow.setRobotInfoData(infoData);
+                    infoWindow.setVisible(infoData[4] == 1);
                 }
             }
         }
     }
-
     /**
-     * Парсит строку с данными в массив int[].
-     * Ожидаемый формат строки: "[x, y, width, height, state]".
+     * Чистит данные от лишних символов, после чтения из файла.
      */
     private int[] parseData(String dataStr) {
         String[] dataParts = dataStr.replace("[", "").replace("]", "").split(", ");

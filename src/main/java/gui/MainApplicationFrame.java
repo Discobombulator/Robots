@@ -1,58 +1,62 @@
 package gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import log.Logger;
 
 /**
- * Главное окно приложения.
+ * Класс MainApplicationFrame является главным окном приложения.
+ * Он содержит рабочий стол (JDesktopPane), на котором располагаются окна игрового поля,
+ * протокола работы и окно с информацией о роботе. Также данный класс отвечает за загрузку
+ * и сохранение состояния окон, создание меню и обработку выхода из приложения.
  */
 public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
     private final WindowsSaver windowsSaver = new WindowsSaver();
-    private final GameWindow gameWindow = new GameWindow();
-    private final LogWindow logWindow = createLogWindow();
 
+    // Общий экземпляр модели робота, который используется в RobotInfoWindow и в GameWindow (через GameVisualizer)
+    private final RobotModel sharedRobotModel = new RobotModel();
+
+    private final GameWindow gameWindow;
+    private final LogWindow logWindow = createLogWindow();
+    private final RobotInfoWindow robotInfoWindow;
+
+    /**
+     * Конструктор главного окна приложения. Он устанавливает размеры окна, создает и размещает
+     * на рабочем столе окна игрового поля, протокола и окна с информацией о роботе, а также загружает
+     * их сохраненные состояния.
+     * Генерирует исключение PropertyVetoException, если установка свернутости окна не разрешена,
+     * или IOException, если возникает ошибка при загрузке состояния.
+     */
     public MainApplicationFrame() throws IOException, PropertyVetoException {
         int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset, screenSize.width - inset * 2, screenSize.height - inset * 2);
         setContentPane(desktopPane);
 
-        // Загружаем данные о позициях окон
-        windowsSaver.loadFromFile(gameWindow, logWindow);
+        // Создаем окно игрового поля с общим экземпляром модели, который передается в GameVisualizer
+        gameWindow = new GameWindow(sharedRobotModel);
+        // Окно с информацией о роботе использует тот же экземпляр модели
+        robotInfoWindow = new RobotInfoWindow(sharedRobotModel);
+
+        // Загружаем сохраненные позиции окон
+        windowsSaver.loadFromFile(gameWindow, logWindow, robotInfoWindow);
 
         // Добавляем окна на рабочий стол
         addWindow(logWindow);
         addWindow(gameWindow);
+        addWindow(robotInfoWindow);
 
-        SwingUtilities.invokeLater(() -> {
-            try {
-                gameWindow.setIcon(gameWindow.getGameData()[4] == 0);
-                logWindow.setIcon(logWindow.getLogData()[4] == 0);
-            } catch (PropertyVetoException e) {
-                e.printStackTrace();
-            }
-        });
-
+        // Создаем меню и добавляем кнопку выхода
         setJMenuBar(generateMenuBar());
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addExitButton();
 
+        // Обработка события закрытия окна
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -65,22 +69,29 @@ public class MainApplicationFrame extends JFrame {
         });
     }
 
+    /**
+     * Создает окно протокола работы приложения. Окно регистрируется в источнике лог-сообщений.
+     * Устанавливаются начальные координаты и размеры окна, после чего окно упаковывается.
+     */
     protected LogWindow createLogWindow() {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
         logWindow.setLocation(10, 10);
-        setMinimumSize(logWindow.getSize());
         logWindow.pack();
         Logger.debug("Протокол работает");
         return logWindow;
     }
 
+    /**
+     * Добавляет переданное окно на рабочий стол приложения и делает его видимым.
+     */
     protected void addWindow(JInternalFrame frame) {
         desktopPane.add(frame);
         frame.setVisible(true);
     }
 
     /**
-     * Генерирует панель меню.
+     * Создает строку меню приложения. Меню включает в себя пункты смены режима отображения,
+     * тестовые команды и пункт выхода.
      */
     private JMenuBar generateMenuBar() {
         JMenuBar menuBar = new JMenuBar();
@@ -103,7 +114,8 @@ public class MainApplicationFrame extends JFrame {
     }
 
     /**
-     * Создает меню "Режим отображения".
+     * Создает меню для выбора режима отображения приложения. Меню включает пункты для
+     * системной и универсальной схемы.
      */
     private JMenu createLookAndFeelMenu() {
         JMenu lookAndFeelMenu = new JMenu("Режим отображения");
@@ -115,28 +127,8 @@ public class MainApplicationFrame extends JFrame {
     }
 
     /**
-     * Вызывает диалог подтверждения выхода, сохраняет состояние окон и завершает работу приложения.
-     *
-     * @throws IOException если возникает ошибка ввода-вывода при сохранении состояния
-     */
-    private void confirmExit() throws IOException {
-        int confirmed = JOptionPane.showConfirmDialog(
-                MainApplicationFrame.this,
-                "Выходим?",
-                "Подтверждение",
-                JOptionPane.YES_NO_OPTION);
-        if (confirmed == JOptionPane.YES_OPTION) {
-            gameWindow.setGameData(windowsSaver.saveWidowData(gameWindow));
-            logWindow.setLogData(windowsSaver.saveWidowData(logWindow));
-            windowsSaver.saveToFile(gameWindow, logWindow);
-
-            dispose();
-            System.exit(0);
-        }
-    }
-
-    /**
-     * Создает элемент меню для системной схемы.
+     * Создает пункт меню для смены на системную схему отображения. При выборе пункта происходит
+     * смена режима отображения окна на системный.
      */
     private JMenuItem createLookMenu() {
         JMenuItem systemLookAndFeel = new JMenuItem("Системная схема", KeyEvent.VK_S);
@@ -148,7 +140,8 @@ public class MainApplicationFrame extends JFrame {
     }
 
     /**
-     * Создает элемент меню для универсальной схемы.
+     * Создает пункт меню для смены на универсальную схему отображения. При выборе пункта происходит
+     * смена режима отображения окна на универсальный.
      */
     private JMenuItem createFeelMenu() {
         JMenuItem crossplatformLookAndFeel = new JMenuItem("Универсальная схема", KeyEvent.VK_S);
@@ -160,7 +153,8 @@ public class MainApplicationFrame extends JFrame {
     }
 
     /**
-     * Создает меню "Тесты".
+     * Создает меню с тестовыми командами для отладки. В настоящее время включает команду
+     * для добавления нового сообщения в лог.
      */
     private JMenu createTestMenu() {
         JMenu testMenu = new JMenu("Тесты");
@@ -175,15 +169,54 @@ public class MainApplicationFrame extends JFrame {
     }
 
     /**
-     * Устанавливает внешний вид приложения.
+     * Добавляет кнопку выхода, которая располагается в нижней части главного окна.
+     * При нажатии на кнопку вызывается процедура подтверждения выхода из приложения.
+     */
+    private void addExitButton() {
+        JPanel panel = new JPanel();
+        JButton exitButton = new JButton("Выход");
+        exitButton.addActionListener(e -> {
+            try {
+                confirmExit();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        panel.add(exitButton);
+        add(panel, BorderLayout.SOUTH);
+    }
+
+    /**
+     * Метод для подтверждения выхода из приложения.
+     * При положительном ответе сохраняется состояние всех окон, после чего приложение закрывается.
+     * Генерирует IOException при ошибке ввода-вывода.
+     */
+    private void confirmExit() throws IOException {
+        int confirmed = JOptionPane.showConfirmDialog(
+                MainApplicationFrame.this,
+                "Выходим?",
+                "Подтверждение",
+                JOptionPane.YES_NO_OPTION);
+        if (confirmed == JOptionPane.YES_OPTION) {
+            gameWindow.setGameData(windowsSaver.saveWidowData(gameWindow));
+            logWindow.setLogData(windowsSaver.saveWidowData(logWindow));
+            robotInfoWindow.setRobotInfoData(windowsSaver.saveWidowData(robotInfoWindow));
+            windowsSaver.saveToFile(gameWindow, logWindow, robotInfoWindow);
+            dispose();
+            System.exit(0);
+        }
+    }
+
+    /**
+     * Устанавливает внешний вид приложения, обновляя интерфейс всех компонентов.
+     * При возникновении ошибки смены темы ошибка игнорируется.
      */
     private void setLookAndFeel(String className) {
         try {
             UIManager.setLookAndFeel(className);
             SwingUtilities.updateComponentTreeUI(this);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                 UnsupportedLookAndFeelException e) {
-            // just ignore
+        } catch (Exception e) {
+            // Игнорируем ошибки смены темы
         }
     }
 }
