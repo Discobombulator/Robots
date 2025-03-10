@@ -48,6 +48,7 @@ public class MainApplicationFrame extends JFrame {
         SwingUtilities.invokeLater(() -> {
             try {
                 gameWindow.setIcon(gameWindow.getGameData()[4] == 0);
+                logWindow.setIcon(logWindow.getLogData()[4] == 0);
             } catch (PropertyVetoException e) {
                 e.printStackTrace();
             }
