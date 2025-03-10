@@ -1,5 +1,6 @@
 package gui;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.Arrays;
 
@@ -7,7 +8,29 @@ import java.util.Arrays;
  * WindowsLocation отвечает за сохранение и загрузку состояния окон
  * (GameWindow и LogWindow) в файл конфигурации state.cfg.
  */
-public class WindowsLocation {
+public class WindowsSaver {
+    /**
+     * Формирует массив данных для Window.
+     * Массив содержит координаты X, Y, ширину, высоту и состояние окна (1 - развернуто, 0 - свернуто).
+     *
+     * @return массив с данными GameWindow
+     */
+    public int[] saveWidowData(JInternalFrame frame) {
+        int windowState;
+
+        if (frame.isIcon()) {
+            windowState = 0;
+        } else {
+            windowState = 1;
+        }
+        return new int[]{
+                frame.getX(),
+                frame.getY(),
+                frame.getWidth(),
+                frame.getHeight(),
+                windowState};
+    }
+
     /**
      * Сохраняет данные о состоянии GameWindow и LogWindow в файл state.cfg.
      *
