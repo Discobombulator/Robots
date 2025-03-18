@@ -9,7 +9,9 @@ import java.util.Arrays;
  * (GameWindow, LogWindow и RobotInfoWindow) в файл конфигурации state.cfg.
  */
 public class WindowsSaver {
-
+    /**
+     * Сохраняет состояние внутреннего окна (JInternalFrame).
+     */
     public int[] saveWidowData(JInternalFrame frame) {
         int windowState = frame.isIcon() ? 0 : 1;
         return new int[]{
@@ -20,6 +22,10 @@ public class WindowsSaver {
                 windowState
         };
     }
+
+    /**
+     * Сохраняет состояние главного окна (JFrame).
+     */
     public int[] saveWidowData(JFrame frame) {
         int windowState = frame.getExtendedState();
         return new int[]{
@@ -47,6 +53,9 @@ public class WindowsSaver {
         }
     }
 
+    /**
+     * Загружает данные о положении и размере окон из файла "state.cfg".
+     */
     public void loadFromFile(MainApplicationFrame mainFrame, GameWindow gameWindow, LogWindow logWindow, RobotInfoWindow infoWindow) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader("state.cfg"))) {
             String line;
@@ -74,6 +83,7 @@ public class WindowsSaver {
             }
         }
     }
+
     /**
      * Чистит данные от лишних символов, после чтения из файла.
      */

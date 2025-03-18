@@ -17,17 +17,23 @@ public class RobotModel {
     /**
      * Возвращает текущую координату X робота.
      */
-    public double getPositionX() { return positionX; }
+    public double getPositionX() {
+        return positionX;
+    }
 
     /**
      * Возвращает текущую координату Y робота.
      */
-    public double getPositionY() { return positionY; }
+    public double getPositionY() {
+        return positionY;
+    }
 
     /**
      * Возвращает текущее направление робота в радианах.
      */
-    public double getDirection() { return direction; }
+    public double getDirection() {
+        return direction;
+    }
 
     /**
      * Добавляет слушателя изменений свойств модели.

@@ -38,6 +38,7 @@ public class GameWindow extends JInternalFrame {
 
         pack();
     }
+
     /**
      * Устанавливает данные окна (координаты, размеры и состояние).
      */
