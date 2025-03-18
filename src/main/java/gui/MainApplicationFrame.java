@@ -36,27 +36,22 @@ public class MainApplicationFrame extends JFrame {
         int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset, screenSize.width - inset * 2, screenSize.height - inset * 2);
-        setContentPane(desktopPane);
 
-        // Создаем окно игрового поля с общим экземпляром модели, который передается в GameVisualizer
+        setContentPane(desktopPane);
         gameWindow = new GameWindow(sharedRobotModel);
-        // Окно с информацией о роботе использует тот же экземпляр модели
         robotInfoWindow = new RobotInfoWindow(sharedRobotModel);
 
-        // Загружаем сохраненные позиции окон
-        windowsSaver.loadFromFile(gameWindow, logWindow, robotInfoWindow);
+        // Загружаем состояния окон, включая MainApplicationFrame
+        windowsSaver.loadFromFile(this, gameWindow, logWindow, robotInfoWindow);
 
-        // Добавляем окна на рабочий стол
         addWindow(logWindow);
         addWindow(gameWindow);
         addWindow(robotInfoWindow);
 
-        // Создаем меню и добавляем кнопку выхода
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addExitButton();
 
-        // Обработка события закрытия окна
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -196,12 +191,10 @@ public class MainApplicationFrame extends JFrame {
                 MainApplicationFrame.this,
                 "Выходим?",
                 "Подтверждение",
-                JOptionPane.YES_NO_OPTION);
+                JOptionPane.YES_NO_OPTION
+        );
         if (confirmed == JOptionPane.YES_OPTION) {
-            gameWindow.setGameData(windowsSaver.saveWidowData(gameWindow));
-            logWindow.setLogData(windowsSaver.saveWidowData(logWindow));
-            robotInfoWindow.setRobotInfoData(windowsSaver.saveWidowData(robotInfoWindow));
-            windowsSaver.saveToFile(gameWindow, logWindow, robotInfoWindow);
+            windowsSaver.saveToFile(this, gameWindow, logWindow, robotInfoWindow);
             dispose();
             System.exit(0);
         }

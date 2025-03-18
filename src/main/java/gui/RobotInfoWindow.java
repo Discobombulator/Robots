@@ -40,10 +40,8 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
     private void initUI() {
         setLayout(new GridLayout(2, 1));
         positionLabel = new JLabel();
-        directionLabel = new JLabel();
         updateLabels();
         add(positionLabel);
-        add(directionLabel);
     }
 
     /**
@@ -53,7 +51,6 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
     private void updateLabels() {
         positionLabel.setText(String.format("Позиция: (%.2f, %.2f)",
                 robotModel.getPositionX(), robotModel.getPositionY()));
-        directionLabel.setText(String.format("Направление: %.2f рад", robotModel.getDirection()));
     }
 
     /**

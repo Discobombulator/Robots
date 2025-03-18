@@ -9,8 +9,19 @@ import java.util.Arrays;
  * (GameWindow, LogWindow и RobotInfoWindow) в файл конфигурации state.cfg.
  */
 public class WindowsSaver {
+
     public int[] saveWidowData(JInternalFrame frame) {
         int windowState = frame.isIcon() ? 0 : 1;
+        return new int[]{
+                frame.getX(),
+                frame.getY(),
+                frame.getWidth(),
+                frame.getHeight(),
+                windowState
+        };
+    }
+    public int[] saveWidowData(JFrame frame) {
+        int windowState = frame.getExtendedState();
         return new int[]{
                 frame.getX(),
                 frame.getY(),
@@ -23,45 +34,41 @@ public class WindowsSaver {
     /**
      * Сохраняет данные о состоянии GameWindow, LogWindow и RobotInfoWindow в файл state.cfg.
      */
-    public void saveToFile(GameWindow gameWindow, LogWindow logWindow, RobotInfoWindow infoWindow) throws IOException {
-        int[] gameData = gameWindow.getGameData();
-        int[] logData = logWindow.getLogData();
-        int[] infoData = infoWindow.getWindowData();
+    public void saveToFile(MainApplicationFrame mainFrame, GameWindow gameWindow, LogWindow logWindow, RobotInfoWindow infoWindow) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("state.cfg"))) {
-            writer.write("gameWindow=" + Arrays.toString(gameData));
+            writer.write("mainFrame=" + Arrays.toString(saveWidowData(mainFrame)));
             writer.newLine();
-            writer.write("logWindow=" + Arrays.toString(logData));
+            writer.write("gameWindow=" + Arrays.toString(saveWidowData(gameWindow)));
             writer.newLine();
-            writer.write("infoWindow=" + Arrays.toString(infoData));
+            writer.write("logWindow=" + Arrays.toString(saveWidowData(logWindow)));
+            writer.newLine();
+            writer.write("infoWindow=" + Arrays.toString(saveWidowData(infoWindow)));
             writer.newLine();
         }
     }
 
-    /**
-     * Загружает данные о состоянии GameWindow, LogWindow и RobotInfoWindow из файла state.cfg.
-     */
-    public void loadFromFile(GameWindow gameWindow, LogWindow logWindow, RobotInfoWindow infoWindow) throws IOException {
+    public void loadFromFile(MainApplicationFrame mainFrame, GameWindow gameWindow, LogWindow logWindow, RobotInfoWindow infoWindow) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader("state.cfg"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("gameWindow=")) {
-                    String gameDataStr = line.substring("gameWindow=".length());
-                    int[] gameData = parseData(gameDataStr);
+                if (line.startsWith("mainFrame=")) {
+                    int[] mainFrameData = parseData(line.substring("mainFrame=".length()));
+                    mainFrame.setBounds(mainFrameData[0], mainFrameData[1], mainFrameData[2], mainFrameData[3]);
+                    mainFrame.setExtendedState(mainFrameData[4]);
+                } else if (line.startsWith("gameWindow=")) {
+                    int[] gameData = parseData(line.substring("gameWindow=".length()));
                     gameWindow.setGameData(gameData);
-                    gameWindow.setLocation(gameData[0], gameData[1]);
-                    gameWindow.setSize(gameData[2], gameData[3]);
+                    gameWindow.setBounds(gameData[0], gameData[1], gameData[2], gameData[3]);
                     gameWindow.setVisible(gameData[4] == 1);
                 } else if (line.startsWith("logWindow=")) {
-                    String logDataStr = line.substring("logWindow=".length());
-                    int[] logData = parseData(logDataStr);
+                    int[] logData = parseData(line.substring("logWindow=".length()));
                     logWindow.setLogData(logData);
-                    logWindow.setLocation(logData[0], logData[1]);
-                    logWindow.setSize(logData[2], logData[3]);
+                    logWindow.setBounds(logData[0], logData[1], logData[2], logData[3]);
                     logWindow.setVisible(logData[4] == 1);
                 } else if (line.startsWith("infoWindow=")) {
-                    String infoDataStr = line.substring("infoWindow=".length());
-                    int[] infoData = parseData(infoDataStr);
+                    int[] infoData = parseData(line.substring("infoWindow=".length()));
                     infoWindow.setRobotInfoData(infoData);
+                    infoWindow.setBounds(infoData[0], infoData[1], infoData[2], infoData[3]);
                     infoWindow.setVisible(infoData[4] == 1);
                 }
             }

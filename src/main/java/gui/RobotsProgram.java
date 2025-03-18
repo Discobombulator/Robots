@@ -26,9 +26,7 @@ public class RobotsProgram {
             } catch (PropertyVetoException e) {
                 throw new RuntimeException(e);
             }
-            frame.pack();
             frame.setVisible(true);
-            frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         });
     }
 }
