@@ -14,79 +14,42 @@ import javax.swing.JPanel;
  * осуществляется посредством таймеров и подписки на изменения модели.
  */
 public class GameVisualizer extends JPanel {
-    private final Timer timer = new Timer("events generator", true);
-    private RobotModel robotModel;
-
-    private volatile int targetPositionX = 150;
-    private volatile int targetPositionY = 100;
+    private final GameController controller;
 
     /**
      * Конструктор GameVisualizer. Инициализирует таймеры для перерисовки и обновления модели,
      * а также обрабатывает события кликов для задания новой целевой позиции.
      */
-    public GameVisualizer() {
-        // Таймер для регулярной перерисовки компонента.
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                EventQueue.invokeLater(GameVisualizer.this::repaint);
-            }
-        }, 0, 50);
-
-        // Таймер для обновления состояния модели робота, если она уже установлена.
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (robotModel != null) {
-                    robotModel.update(targetPositionX, targetPositionY, 10);
-                }
-            }
-        }, 0, 10);
-
-        // Обработка кликов для задания новой целевой позиции.
+    public GameVisualizer(GameController controller) {
+        this.controller = controller;
+        // Обработчик кликов остаётся, если он нужен
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                setTargetPosition(e.getPoint());
+                controller.setTargetPosition(e.getPoint());
                 repaint();
             }
         });
-
-        setDoubleBuffered(true);
+        // Таймер для регулярной перерисовки
+        new java.util.Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                EventQueue.invokeLater(() -> repaint());
+            }
+        }, 0, 10); // обновление каждые 50 мс
     }
 
-    /**
-     * Устанавливает общий экземпляр модели робота, который будет использоваться
-     * для обновления и отрисовки.
-     */
-    public void setRobotModel(RobotModel model) {
-        this.robotModel = model;
-        // Подписываемся на изменения модели для вызова перерисовки.
-        robotModel.addPropertyChangeListener(evt -> repaint());
-    }
-
-    /**
-     * Задает новую целевую позицию, куда должен двигаться робот.
-     */
-    private void setTargetPosition(Point p) {
-        targetPositionX = p.x;
-        targetPositionY = p.y;
-    }
-
-    /**
-     * Переопределённый метод отрисовки компонента. Выполняет отрисовку робота и целевой точки.
-     */
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
-        if (robotModel != null) {
-            int robotX = (int) (robotModel.getPositionX() + 0.5);
-            int robotY = (int) (robotModel.getPositionY() + 0.5);
-            double robotDirection = robotModel.getDirection();
+        if (controller.getRobotModel() != null) {
+            int robotX = (int) (controller.getRobotModel().getPositionX() + 0.5);
+            int robotY = (int) (controller.getRobotModel().getPositionY() + 0.5);
+            double robotDirection = controller.getRobotModel().getDirection();
             drawRobot(g2d, robotX, robotY, robotDirection);
         }
-        drawTarget(g2d, targetPositionX, targetPositionY);
+        drawTarget(g2d, controller.getTargetPositionX(), controller.getTargetPositionY());
     }
 
     /**

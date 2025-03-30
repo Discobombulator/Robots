@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 public class GameWindow extends JInternalFrame {
     private final GameVisualizer visualizer;
+    private final GameController controller;
     /**
      * Массив данных окна: [x, y, width, height, state].
      */
@@ -27,10 +28,13 @@ public class GameWindow extends JInternalFrame {
         setLocation(gameData[0], gameData[1]);
         setResizable(true);
 
-        // Создаём визуализатор и устанавливаем в него общий экземпляр модели
-        visualizer = new GameVisualizer();
-        visualizer.setRobotModel(model);
-        visualizer.setPreferredSize(new Dimension(gameData[2], gameData[3]));
+        // Создаем контроллер, настраиваем модель
+        controller = new GameController();
+        controller.setRobotModel(model);
+
+        // Передаем контроллер в визуализатор
+        visualizer = new GameVisualizer(controller);
+        visualizer.setPreferredSize(new Dimension(1100, 440));
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(visualizer, BorderLayout.CENTER);
