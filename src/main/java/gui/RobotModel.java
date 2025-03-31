@@ -43,13 +43,6 @@ public class RobotModel {
     }
 
     /**
-     * Удаляет слушателя изменений свойств модели.
-     */
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(listener);
-    }
-
-    /**
      * Обновляет состояние модели робота на основе целевых координат и времени.
      * Вычисляет новую позицию и направление с учетом ограничений по скорости и угловому вращению.
      * Оповещает слушателей об изменениях координат и направления.
@@ -67,7 +60,10 @@ public class RobotModel {
         double angleDiff = normalizeAngle(angleToTarget - direction);
         double angularVelocity = 0;
         if (angleDiff > Math.PI) {
-            angleDiff = angleDiff - 2 * Math.PI;
+            angularVelocity = maxAngularVelocity;
+        }
+        if (angleDiff < Math.PI) {
+            angularVelocity = -maxAngularVelocity;
         }
         if (angleDiff > 0) {
             angularVelocity = Math.min(maxAngularVelocity, angleDiff / duration);
