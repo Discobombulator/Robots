@@ -48,6 +48,17 @@ public class MainApplicationFrame extends JFrame {
         addWindow(gameWindow);
         addWindow(robotInfoWindow);
 
+        SwingUtilities.invokeLater(() -> {
+            try {
+                gameWindow.setIcon(gameWindow.getGameData()[4] == 0);
+                logWindow.setIcon(logWindow.getLogData()[4] == 0);
+                robotInfoWindow.setIcon(robotInfoWindow.getWindowData()[4] == 0);
+            } catch (PropertyVetoException e) {
+                e.printStackTrace();
+            }
+        });
+
+
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addExitButton();
