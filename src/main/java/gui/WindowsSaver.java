@@ -56,7 +56,23 @@ public class WindowsSaver {
     /**
      * Загружает данные о положении и размере окон из файла "state.cfg".
      */
-    public void loadFromFile(MainApplicationFrame mainFrame, GameWindow gameWindow, LogWindow logWindow, RobotInfoWindow infoWindow) throws IOException {
+    public void loadFromFile(MainApplicationFrame mainFrame, GameWindow gameWindow, LogWindow logWindow,
+                             RobotInfoWindow infoWindow) throws IOException {
+        File configFile = new File("state.cfg");
+
+        if (!configFile.exists()) {
+            mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            gameWindow.setBounds(100, 100, 400, 300);
+            logWindow.setBounds(150, 150, 300, 200);
+            infoWindow.setBounds(200, 200, 300, 200);
+
+            mainFrame.setExtendedState(JFrame.NORMAL);
+            gameWindow.setVisible(true);
+            logWindow.setVisible(true);
+            infoWindow.setVisible(true);
+            return;
+        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader("state.cfg"))) {
             String line;
             while ((line = reader.readLine()) != null) {

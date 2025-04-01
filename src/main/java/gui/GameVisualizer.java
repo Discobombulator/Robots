@@ -4,83 +4,62 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.util.Timer;
-import java.util.TimerTask;
 import javax.swing.JPanel;
 
 /**
  * Класс GameVisualizer отвечает за отрисовку игрового поля, включая
  * визуализацию робота и целевой точки. Обновление состояния модели робота
- * осуществляется посредством таймеров и подписки на изменения модели.
+ * осуществляется посредством подписки на изменения модели.
  */
 public class GameVisualizer extends JPanel {
     private final GameController controller;
 
     /**
-     * Конструктор GameVisualizer. Инициализирует таймеры для перерисовки и обновления модели,
-     * а также обрабатывает события кликов для задания новой целевой позиции.
+     * Создает визуализатор игры и добавляет обработчик кликов для установки целевой точки.
      */
     public GameVisualizer(GameController controller) {
         this.controller = controller;
-        // Обработчик кликов остаётся, если он нужен
+        controller.getRobotModel().addPropertyChangeListener(evt -> repaint());
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                controller.setTargetPosition(e.getPoint());
-                repaint();
+                if (controller.getRobotModel() != null) {
+                    controller.getRobotModel().setTargetPosition(e.getX(), e.getY());
+                }
             }
         });
-        // Таймер для регулярной перерисовки
-        new java.util.Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                EventQueue.invokeLater(() -> repaint());
-            }
-        }, 0, 10); // обновление каждые 50 мс
     }
 
+    /**
+     * Отрисовывает игровое поле, включая робота и целевую точку.
+     */
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
-        if (controller.getRobotModel() != null) {
-            int robotX = (int) (controller.getRobotModel().getPositionX() + 0.5);
-            int robotY = (int) (controller.getRobotModel().getPositionY() + 0.5);
-            double robotDirection = controller.getRobotModel().getDirection();
-            drawRobot(g2d, robotX, robotY, robotDirection);
+        RobotModel model = controller.getRobotModel();
+
+        if (model != null) {
+            drawRobot(g2d, (int) model.getPositionX(), (int) model.getPositionY(), model.getDirection());
+            drawTarget(g2d, (int) model.getTargetX(), (int) model.getTargetY());
         }
-        drawTarget(g2d, controller.getTargetPositionX(), controller.getTargetPositionY());
     }
 
     /**
-     * Заполняет овал с указанными параметрами.
-     */
-    private void fillOval(Graphics g, int centerX, int centerY, int diam1, int diam2) {
-        g.fillOval(centerX - diam1 / 2, centerY - diam2 / 2, diam1, diam2);
-    }
-
-    /**
-     * Рисует овал с указанными параметрами.
-     */
-    private void drawOval(Graphics g, int centerX, int centerY, int diam1, int diam2) {
-        g.drawOval(centerX - diam1 / 2, centerY - diam2 / 2, diam1, diam2);
-    }
-
-    /**
-     * Отрисовывает робота с заданными координатами и направлением.
+     * Отрисовывает робота в заданной позиции и направлении.
      */
     private void drawRobot(Graphics2D g, int x, int y, double direction) {
         AffineTransform oldTransform = g.getTransform();
-        AffineTransform transform = AffineTransform.getRotateInstance(direction, x, y);
-        g.setTransform(transform);
+        g.rotate(direction, x, y);
         g.setColor(Color.MAGENTA);
-        fillOval(g, x, y, 30, 10);
+        g.fillOval(x - 15, y - 5, 30, 10);
         g.setColor(Color.BLACK);
-        drawOval(g, x, y, 30, 10);
+        g.drawOval(x - 15, y - 5, 30, 10);
         g.setColor(Color.WHITE);
-        fillOval(g, x + 10, y, 5, 5);
+        g.fillOval(x + 5, y - 2, 5, 5);
         g.setColor(Color.BLACK);
-        drawOval(g, x + 10, y, 5, 5);
+        g.drawOval(x + 5, y - 2, 5, 5);
         g.setTransform(oldTransform);
     }
 
@@ -88,10 +67,9 @@ public class GameVisualizer extends JPanel {
      * Отрисовывает целевую точку.
      */
     private void drawTarget(Graphics2D g, int x, int y) {
-        g.setTransform(new AffineTransform());
         g.setColor(Color.GREEN);
-        fillOval(g, x, y, 5, 5);
+        g.fillOval(x - 2, y - 2, 5, 5);
         g.setColor(Color.BLACK);
-        drawOval(g, x, y, 5, 5);
+        g.drawOval(x - 2, y - 2, 5, 5);
     }
 }

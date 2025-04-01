@@ -11,43 +11,65 @@ public class RobotModel {
     private double positionX = 100;
     private double positionY = 100;
     private double direction = 0; // в радианах
+    private double targetX = 150;
+    private double targetY = 100;
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     /**
-     * Возвращает текущую координату X робота.
+     * Возвращает текущую позицию робота по оси X.
      */
     public double getPositionX() {
         return positionX;
     }
 
     /**
-     * Возвращает текущую координату Y робота.
+     * Возвращает текущую позицию робота по оси Y.
      */
     public double getPositionY() {
         return positionY;
     }
 
     /**
-     * Возвращает текущее направление робота в радианах.
+     * Возвращает текущее направление робота (в радианах).
      */
     public double getDirection() {
         return direction;
     }
 
     /**
-     * Добавляет слушателя изменений свойств модели.
+     * Возвращает целевую позицию по оси X.
      */
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(listener);
+    public double getTargetX() {
+        return targetX;
     }
 
     /**
-     * Обновляет состояние модели робота на основе целевых координат и времени.
-     * Вычисляет новую позицию и направление с учетом ограничений по скорости и угловому вращению.
-     * Оповещает слушателей об изменениях координат и направления.
+     * Возвращает целевую позицию по оси Y.
      */
-    public void update(double targetX, double targetY, double duration) {
+    public double getTargetY() {
+        return targetY;
+    }
+
+    /**
+     * Устанавливает целевую позицию для робота.
+     * Уведомляет подписчиков об изменении целевых координат.
+     */
+    public void setTargetPosition(double x, double y) {
+        double oldX = targetX;
+        double oldY = targetY;
+        targetX = x;
+        targetY = y;
+        pcs.firePropertyChange("targetX", oldX, targetX);
+        pcs.firePropertyChange("targetY", oldY, targetY);
+    }
+
+    /**
+     * Обновляет состояние робота за определенный промежуток времени.
+     * Вычисляет новое положение и направление робота.
+     */
+    public void update(double duration) {
+
         double distance = Math.hypot(targetX - positionX, targetY - positionY);
         if (distance < 0.5) return;
 
@@ -56,33 +78,18 @@ public class RobotModel {
         double angleToTarget = Math.atan2(targetY - positionY, targetX - positionX);
         angleToTarget = normalizeAngle(angleToTarget);
 
-        // Вычисляет разницу углов и корректирует направление
         double angleDiff = normalizeAngle(angleToTarget - direction);
-        double angularVelocity = 0;
-        if (angleDiff > Math.PI) {
-            angularVelocity = maxAngularVelocity;
-        }
-        if (angleDiff < Math.PI) {
-            angularVelocity = -maxAngularVelocity;
-        }
-        if (angleDiff > 0) {
-            angularVelocity = Math.min(maxAngularVelocity, angleDiff / duration);
-        } else if (angleDiff < 0) {
-            angularVelocity = Math.max(-maxAngularVelocity, angleDiff / duration);
-        }
+        double angularVelocity;
 
-        // Обновление позиции с учетом криволинейного движения
-        double newX, newY;
-        if (Math.abs(angularVelocity) < 1e-6) {
-            // Прямолинейное движение
-            newX = positionX + maxVelocity * duration * Math.cos(direction);
-            newY = positionY + maxVelocity * duration * Math.sin(direction);
+        if (angleDiff > Math.PI) {
+            angularVelocity = -maxAngularVelocity;
+        } else if (angleDiff < -Math.PI) {
+            angularVelocity = maxAngularVelocity;
         } else {
-            newX = positionX + maxVelocity / angularVelocity *
-                    (Math.sin(direction + angularVelocity * duration) - Math.sin(direction));
-            newY = positionY - maxVelocity / angularVelocity *
-                    (Math.cos(direction + angularVelocity * duration) - Math.cos(direction));
+            angularVelocity = (angleDiff > 0) ? maxAngularVelocity : -maxAngularVelocity;
         }
+        double newX = positionX + maxVelocity * duration * Math.cos(direction);
+        double newY = positionY + maxVelocity * duration * Math.sin(direction);
 
         double oldX = positionX;
         double oldY = positionY;
@@ -92,10 +99,16 @@ public class RobotModel {
         positionY = newY;
         direction = normalizeAngle(direction + angularVelocity * duration);
 
-        // Оповещает слушателей об изменении координат и направления
         pcs.firePropertyChange("positionX", oldX, positionX);
         pcs.firePropertyChange("positionY", oldY, positionY);
         pcs.firePropertyChange("direction", oldDir, direction);
+    }
+
+    /**
+     * Добавляет слушателя для отслеживания изменений в модели робота.
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
     }
 
     /**
