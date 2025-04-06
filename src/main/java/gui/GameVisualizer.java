@@ -13,38 +13,35 @@ import javax.swing.JPanel;
  */
 public class GameVisualizer extends JPanel {
     private final GameController controller;
+    private final RobotModel model;
 
     /**
      * Создает визуализатор игры и добавляет обработчик кликов для установки целевой точки.
      */
-    public GameVisualizer(GameController controller) {
-        this.controller = controller;
-        controller.getRobotModel().addPropertyChangeListener(evt -> repaint());
+    public GameVisualizer(RobotModel model) {
+        this.model = model;
+        this.controller = new GameController(model, this); // создаем контроллер тут
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (controller.getRobotModel() != null) {
-                    controller.getRobotModel().setTargetPosition(e.getX(), e.getY());
-                }
+                controller.onUserClick(e.getX(), e.getY());
             }
         });
     }
 
     /**
      * Отрисовывает игровое поле, включая робота и целевую точку.
+     * Вызывается автоматически при необходимости перерисовки компонента.
      */
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
-        RobotModel model = controller.getRobotModel();
-
-        if (model != null) {
-            drawRobot(g2d, (int) model.getPositionX(), (int) model.getPositionY(), model.getDirection());
-            drawTarget(g2d, (int) model.getTargetX(), (int) model.getTargetY());
-        }
+        drawRobot(g2d, (int) model.getPositionX(), (int) model.getPositionY(), model.getDirection());
+        drawTarget(g2d, (int) model.getTargetX(), (int) model.getTargetY());
     }
+
 
     /**
      * Отрисовывает робота в заданной позиции и направлении.

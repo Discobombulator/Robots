@@ -91,17 +91,18 @@ public class RobotModel {
         double newX = positionX + maxVelocity * duration * Math.cos(direction);
         double newY = positionY + maxVelocity * duration * Math.sin(direction);
 
-        double oldX = positionX;
-        double oldY = positionY;
-        double oldDir = direction;
+        RobotsPosition oldPos = new RobotsPosition(positionX, positionY);
 
         positionX = newX;
         positionY = newY;
         direction = normalizeAngle(direction + angularVelocity * duration);
 
-        pcs.firePropertyChange("positionX", oldX, positionX);
-        pcs.firePropertyChange("positionY", oldY, positionY);
-        pcs.firePropertyChange("direction", oldDir, direction);
+        RobotsPosition newPos = new RobotsPosition(positionX, positionY);
+        firePositionChange(oldPos, newPos);
+    }
+
+    private void firePositionChange(RobotsPosition oldPos, RobotsPosition newPos) {
+        pcs.firePropertyChange("position", oldPos, newPos);
     }
 
     /**

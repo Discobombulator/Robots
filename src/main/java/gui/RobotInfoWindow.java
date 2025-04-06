@@ -13,7 +13,6 @@ import java.beans.PropertyChangeListener;
  */
 public class RobotInfoWindow extends JInternalFrame implements PropertyChangeListener {
     private JLabel positionLabel;
-    private JLabel directionLabel;
     private final RobotModel robotModel;
 
     private int[] windowData = new int[]{100, 100, 300, 100, 1};
@@ -59,7 +58,9 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        SwingUtilities.invokeLater(this::updateLabels);
+        if ("position".equals(evt.getPropertyName())) {
+            SwingUtilities.invokeLater(this::updateLabels);
+        }
     }
 
     /**

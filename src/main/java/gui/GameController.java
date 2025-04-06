@@ -9,35 +9,33 @@ import java.util.TimerTask;
  * Использует таймер для периодического обновления положения робота.
  */
 public class GameController {
-    private RobotModel robotModel;
-    /**
-     * Устанавливает модель робота, которая будет обновляться контроллером.
-     */
-    public void setRobotModel(RobotModel model) {
-        this.robotModel = model;
-    }
-    /**
-     * Возвращает текущую модель робота.
-     *
-     */
-    public RobotModel getRobotModel() {
-        return robotModel;
-    }
+    private final RobotModel model;
+
     /**
      * Создает контроллер игры и запускает таймер для обновления состояния робота каждые 10 мс.
      */
-    public GameController() {
-        Timer timer = new Timer("events generator", true);
+    public GameController(RobotModel model, GameVisualizer view) {
+        this.model = model;
+
+        // Подписка на изменения модели
+        model.addPropertyChangeListener(evt -> view.repaint());
+
+        // Периодическое обновление
+        Timer timer = new Timer("RobotUpdateTimer", true);
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (robotModel != null) {
-                    robotModel.update(10);
-                }
+                model.update(10);
             }
         }, 0, 10);
+    }
 
-
+    /**
+     * Обрабатывает пользовательский клик по игровому полю.
+     * Устанавливает целевую позицию для робота.
+     */
+    public void onUserClick(int x, int y) {
+        model.setTargetPosition(x, y);
     }
 }
 
