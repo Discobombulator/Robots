@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 
 /**
@@ -11,7 +13,7 @@ import javax.swing.JPanel;
  * визуализацию робота и целевой точки. Обновление состояния модели робота
  * осуществляется посредством подписки на изменения модели.
  */
-public class GameVisualizer extends JPanel {
+public class GameVisualizer extends JPanel implements PropertyChangeListener {
     private final GameController controller;
     private final RobotModel model;
 
@@ -20,7 +22,10 @@ public class GameVisualizer extends JPanel {
      */
     public GameVisualizer(RobotModel model) {
         this.model = model;
-        this.controller = new GameController(model, this); // создаем контроллер тут
+        this.controller = new GameController(model); // создаем контроллер тут
+
+        // Подписка на изменения модели
+        model.addPropertyChangeListener(this);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -68,5 +73,13 @@ public class GameVisualizer extends JPanel {
         g.fillOval(x - 2, y - 2, 5, 5);
         g.setColor(Color.BLACK);
         g.drawOval(x - 2, y - 2, 5, 5);
+    }
+    /**
+     * Обрабатывает событие изменения свойств модели робота.
+     * При возникновении события перерисовывает поле.
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        repaint();
     }
 }

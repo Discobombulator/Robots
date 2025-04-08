@@ -14,11 +14,9 @@ public class GameController {
     /**
      * Создает контроллер игры и запускает таймер для обновления состояния робота каждые 10 мс.
      */
-    public GameController(RobotModel model, GameVisualizer view) {
+    public GameController(RobotModel model) {
         this.model = model;
 
-        // Подписка на изменения модели
-        model.addPropertyChangeListener(evt -> view.repaint());
 
         // Периодическое обновление
         Timer timer = new Timer("RobotUpdateTimer", true);
