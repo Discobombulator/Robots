@@ -5,7 +5,10 @@ import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
-
+/**
+ * Класс GameWindow отображает игровое поле
+ * и обновляется при изменении
+ */
 public class GameWindow extends JInternalFrame {
     /**
      * Массив данных окна: [x, y, width, height, state].
