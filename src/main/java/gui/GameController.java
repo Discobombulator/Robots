@@ -12,7 +12,7 @@ public class GameController {
     private final RobotModel model;
 
     /**
-     * Создает контроллер игры и запускает таймер для обновления состояния робота каждые 10 мс.
+     * Создает контроллер игры и запускает таймер для обновления состояния робота каждые.
      */
     public GameController(RobotModel model) {
         this.model = model;

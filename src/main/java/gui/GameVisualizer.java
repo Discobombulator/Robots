@@ -74,9 +74,10 @@ public class GameVisualizer extends JPanel implements PropertyChangeListener {
         g.setColor(Color.BLACK);
         g.drawOval(x - 2, y - 2, 5, 5);
     }
+
     /**
      * Обрабатывает событие изменения свойств модели робота.
-     * При возникновении события перерисовывает поле.
+     * При возникновении события перерисовывает игровое поле.
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {

@@ -31,7 +31,7 @@ public class GameWindow extends JInternalFrame {
         visualizer.setPreferredSize(new Dimension(1100, 440));
 
         // Создаем контроллер (Presenter), передаем модель и вьюшку
-        GameController controller = new GameController(model, visualizer);
+        GameController controller = new GameController(model);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(visualizer, BorderLayout.CENTER);
