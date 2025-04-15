@@ -5,24 +5,25 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * Что починить:
- * 1. Этот класс порождает утечку ресурсов (связанные слушатели оказываются
+ * 1. Этот класс больше не порождает утечку ресурсов (связанные слушатели оказываются
  * удерживаемыми в памяти)
- * 2. Этот класс хранит активные сообщения лога, но в такой реализации он
- * их лишь накапливает. Надо же, чтобы количество сообщений в логе было ограничено
- * величиной m_iQueueLength (т.е. реально нужна очередь сообщений
- * ограниченного размера)
+ * 2. Этот класс хранит сообщения лога, которые выполняют требования,
+ *  1) имеют ограниченный размер (старые записи вытесняются)
+ *  2) должна быть потокобезопасной (запись и чтение порождают состояние гонки)
+ *  3) должна быть возможность доступа к части данных (сегмент смежных записей)
+ * по индексам начала и конца (такая операция, по идее, нужна для
+ * эффективного отображения данных в окне, чтобы не читать полный лог)
  */
 public class LogWindowSource
 {
 
-    private final WeakRingCircleBuffer<LogEntry> m_messages;
+    private final CircleBuffer<LogEntry> m_messages;
     private final Set<LogChangeListener> m_listeners;
     private volatile LogChangeListener[] m_activeListeners;
 
     public LogWindowSource(int iQueueLength)
     {
-        this.m_messages = new WeakRingCircleBuffer<>(iQueueLength);
+        this.m_messages = new CircleBuffer<>(iQueueLength);
         m_listeners = Collections.newSetFromMap(new WeakHashMap<>());
     }
 
