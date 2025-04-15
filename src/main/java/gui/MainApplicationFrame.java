@@ -166,13 +166,24 @@ public class MainApplicationFrame extends JFrame {
         JMenu testMenu = new JMenu("Тесты");
         testMenu.setMnemonic(KeyEvent.VK_T);
         testMenu.getAccessibleContext().setAccessibleDescription("Тестовые команды");
+
+        // Первая кнопка: добавляет стандартное сообщение
         JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
         addLogMessageItem.addActionListener((event) -> {
             Logger.debug("Новая строка");
         });
+
+        // Вторая кнопка: добавляет другое сообщение
+        JMenuItem addLogErrorItem = new JMenuItem("Ошибка протокола", KeyEvent.VK_P);
+        addLogErrorItem.addActionListener((event) -> {
+            Logger.debug("Протокол не работает");
+        });
+
         testMenu.add(addLogMessageItem);
+        testMenu.add(addLogErrorItem);
         return testMenu;
     }
+
 
     /**
      * Добавляет кнопку выхода, которая располагается в нижней части главного окна.
