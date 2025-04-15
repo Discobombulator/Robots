@@ -17,8 +17,8 @@ import log.LogWindowSource;
  * и обновляется при изменении лога.
  */
 public class LogWindow extends JInternalFrame implements LogChangeListener {
-    private LogWindowSource m_logSource;
-    private TextArea m_logContent;
+    private final LogWindowSource m_logSource;
+    private final TextArea m_logContent;
     /**
      * Массив, содержащий данные о положении, размере и состоянии окна.
      */
@@ -69,7 +69,9 @@ public class LogWindow extends JInternalFrame implements LogChangeListener {
     private void updateLogContent() {
         StringBuilder content = new StringBuilder();
         for (LogEntry entry : m_logSource.all()) {
-            content.append(entry.getMessage()).append("\n");
+            if (entry != null) {
+                content.append(entry.getMessage()).append("\n");
+            }
         }
         m_logContent.setText(content.toString());
         m_logContent.invalidate();
