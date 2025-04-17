@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
@@ -9,7 +11,7 @@ import javax.swing.JPanel;
  * Класс GameWindow отображает игровое поле
  * и обновляется при изменении
  */
-public class GameWindow extends JInternalFrame {
+public class GameWindow extends JInternalFrame implements PropertyChangeListener {
     /**
      * Массив данных окна: [x, y, width, height, state].
      */
@@ -23,7 +25,13 @@ public class GameWindow extends JInternalFrame {
      * @throws PropertyVetoException если установка икон (свернутости) окна не разрешена
      */
     public GameWindow(RobotModel model) throws PropertyVetoException {
-        super("Игровое поле", true, true, true, true);
+        super(LocalizationManager.getInstance().getString("game.title")
+                , true, true, true, true);
+
+        addPropertyChangeListener(this);
+
+        // Подписываемся на смену локали
+        LocalizationManager.getInstance().addPropertyChangeListener(this);
 
         setSize(gameData[2], gameData[3]);
         setLocation(gameData[0], gameData[1]);
@@ -55,5 +63,13 @@ public class GameWindow extends JInternalFrame {
      */
     public int[] getGameData() {
         return gameData;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("locale".equals(evt.getPropertyName())) {
+            // Обновляем заголовок окна
+            setTitle(LocalizationManager.getInstance().getString("game.title"));
+        }
     }
 }

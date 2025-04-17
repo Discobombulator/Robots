@@ -24,9 +24,13 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
      * упаковывает окно и делает его видимым.
      */
     public RobotInfoWindow(RobotModel model) {
-        super("Информация о роботе", true, true, true, true);
+        super(LocalizationManager.getInstance().getString("menu.robot"), true, true, true, true);
         this.robotModel = model;
         robotModel.addPropertyChangeListener(this);
+
+        // Подписываемся на смену локали
+        LocalizationManager.getInstance().addPropertyChangeListener(this);
+
         initUI();
         pack();
         setVisible(true);
@@ -46,9 +50,11 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
     /**
      * Обновляет текст меток, отображающих позицию и направление робота.
      * Используется форматирование с двумя знаками после запятой.
+     *
      */
     private void updateLabels() {
-        positionLabel.setText(String.format("Позиция: (%.2f, %.2f)",
+        positionLabel.setText(String.format(LocalizationManager.getInstance().getString("robot.info")
+                        +": (%.2f, %.2f)",
                 robotModel.getPositionX(), robotModel.getPositionY()));
     }
 
@@ -58,6 +64,10 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        if ("locale".equals(evt.getPropertyName())) {
+            // Обновляем заголовок окна
+            setTitle(LocalizationManager.getInstance().getString("menu.robot"));
+        }
         if ("position".equals(evt.getPropertyName())) {
             SwingUtilities.invokeLater(this::updateLabels);
         }
@@ -85,4 +95,6 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
     public int[] getWindowData() {
         return windowData;
     }
+
+
 }

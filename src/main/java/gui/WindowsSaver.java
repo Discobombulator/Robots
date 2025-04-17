@@ -3,6 +3,7 @@ package gui;
 import javax.swing.*;
 import java.io.*;
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * WindowsSaver отвечает за сохранение и загрузку состояния окон
@@ -50,6 +51,8 @@ public class WindowsSaver {
             writer.newLine();
             writer.write("infoWindow=" + Arrays.toString(saveWidowData(infoWindow)));
             writer.newLine();
+            writer.write("language=" + LocalizationManager.getInstance().getCurrentLocale().getLanguage());
+            writer.newLine();
         }
     }
 
@@ -96,6 +99,11 @@ public class WindowsSaver {
                     infoWindow.setBounds(infoData[0], infoData[1], infoData[2], infoData[3]);
                     infoWindow.setVisible(infoData[4] == 1);
                 }
+                else if (line.startsWith("language=")) {
+                    String lang = line.substring("language=".length()).trim();
+                    LocalizationManager.getInstance().setLocale(new Locale(lang));
+                }
+
             }
         }
     }

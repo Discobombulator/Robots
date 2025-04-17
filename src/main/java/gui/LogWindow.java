@@ -1,8 +1,8 @@
 package gui;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.TextArea;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
@@ -16,7 +16,7 @@ import log.LogWindowSource;
  * Класс LogWindow отображает лог-сообщения из LogWindowSource
  * и обновляется при изменении лога.
  */
-public class LogWindow extends JInternalFrame implements LogChangeListener {
+public class LogWindow extends JInternalFrame implements LogChangeListener, PropertyChangeListener {
     private final LogWindowSource m_logSource;
     private final TextArea m_logContent;
     /**
@@ -48,7 +48,15 @@ public class LogWindow extends JInternalFrame implements LogChangeListener {
      * @param logSource источник лог-сообщений
      */
     public LogWindow(LogWindowSource logSource) {
-        super("Протокол работы", true, true, true, true);
+
+        super(LocalizationManager.getInstance().getString("log.title")
+                , true, true, true, true);
+
+        addPropertyChangeListener(this);
+
+        // Подписываемся на смену локали
+        LocalizationManager.getInstance().addPropertyChangeListener(this);
+
         m_logSource = logSource;
         m_logSource.registerListener(this);
         m_logContent = new TextArea("");
@@ -84,5 +92,12 @@ public class LogWindow extends JInternalFrame implements LogChangeListener {
     @Override
     public void onLogChanged() {
         EventQueue.invokeLater(this::updateLogContent);
+    }
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("locale".equals(evt.getPropertyName())) {
+            // Обновляем заголовок окна
+            setTitle(LocalizationManager.getInstance().getString("game.title"));
+        }
     }
 }
