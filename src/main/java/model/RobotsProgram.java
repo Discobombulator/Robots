@@ -1,6 +1,7 @@
-package gui;
+package model;
 
-import java.awt.Frame;
+import gui.MainApplicationFrame;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public class RobotsProgram {
             e.printStackTrace();
         }
         SwingUtilities.invokeLater(() -> {
-            MainApplicationFrame frame = null;
+            MainApplicationFrame frame;
             try {
                 frame = new MainApplicationFrame();
             } catch (IOException e) {

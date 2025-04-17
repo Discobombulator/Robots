@@ -1,4 +1,6 @@
-package gui;
+package model;
+
+import gui.*;
 
 import javax.swing.*;
 import java.io.*;
@@ -98,10 +100,9 @@ public class WindowsSaver {
                     infoWindow.setRobotInfoData(infoData);
                     infoWindow.setBounds(infoData[0], infoData[1], infoData[2], infoData[3]);
                     infoWindow.setVisible(infoData[4] == 1);
-                }
-                else if (line.startsWith("language=")) {
+                } else if (line.startsWith("language=")) {
                     String lang = line.substring("language=".length()).trim();
-                    LocalizationManager.getInstance().setLocale(new Locale(lang));
+                    LocalizationManager.getInstance().setLocale(Locale.of(lang));
                 }
 
             }

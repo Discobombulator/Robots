@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import log.LogChangeListener;
 import log.LogEntry;
 import log.LogWindowSource;
+import model.LocalizationManager;
 
 /**
  * Окно протокола работы приложения.
@@ -93,6 +94,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Prop
     public void onLogChanged() {
         EventQueue.invokeLater(this::updateLogContent);
     }
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("locale".equals(evt.getPropertyName())) {

@@ -1,5 +1,8 @@
 package gui;
 
+import model.LocalizationManager;
+import model.RobotModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
@@ -50,11 +53,10 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
     /**
      * Обновляет текст меток, отображающих позицию и направление робота.
      * Используется форматирование с двумя знаками после запятой.
-     *
      */
     private void updateLabels() {
         positionLabel.setText(String.format(LocalizationManager.getInstance().getString("robot.info")
-                        +": (%.2f, %.2f)",
+                        + ": (%.2f, %.2f)",
                 robotModel.getPositionX(), robotModel.getPositionY()));
     }
 

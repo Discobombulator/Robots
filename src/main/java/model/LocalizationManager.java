@@ -1,4 +1,4 @@
-package gui;
+package model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class LocalizationManager {
     private static final LocalizationManager instance = new LocalizationManager();
-    private Locale currentLocale = new Locale("ru");
+    private Locale currentLocale = Locale.of("ru");
     private ResourceBundle bundle = ResourceBundle.getBundle("messages", currentLocale);
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 

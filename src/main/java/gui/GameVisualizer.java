@@ -1,5 +1,8 @@
 package gui;
 
+import controller.GameController;
+import model.RobotModel;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

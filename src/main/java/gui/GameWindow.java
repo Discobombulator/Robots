@@ -1,5 +1,9 @@
 package gui;
 
+import controller.GameController;
+import model.LocalizationManager;
+import model.RobotModel;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;

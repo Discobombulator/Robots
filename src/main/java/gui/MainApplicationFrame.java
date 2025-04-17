@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.Locale;
 
 import log.Logger;
+import model.LocalizationManager;
+import model.RobotModel;
+import model.WindowsSaver;
 
 /**
  * Класс MainApplicationFrame является главным окном приложения.
@@ -178,16 +181,14 @@ public class MainApplicationFrame extends JFrame {
         // Первая кнопка: добавляет стандартное сообщение
         JMenuItem addLogMessageItem = new JMenuItem(LocalizationManager.
                 getInstance().getString("button1.log"), KeyEvent.VK_S);
-        addLogMessageItem.addActionListener((event) -> {
-            Logger.debug(LocalizationManager.getInstance().getString("button1.log.print"));
-        });
+        addLogMessageItem.addActionListener((event) ->
+                Logger.debug(LocalizationManager.getInstance().getString("button1.log.print")));
 
         // Вторая кнопка: добавляет другое сообщение
         JMenuItem addLogErrorItem = new JMenuItem(LocalizationManager.
                 getInstance().getString("button2.log"), KeyEvent.VK_P);
-        addLogErrorItem.addActionListener((event) -> {
-            Logger.debug(LocalizationManager.getInstance().getString("button2.log.print"));
-        });
+        addLogErrorItem.addActionListener((event) ->
+                Logger.debug(LocalizationManager.getInstance().getString("button2.log.print")));
 
         testMenu.add(addLogMessageItem);
         testMenu.add(addLogErrorItem);
@@ -200,17 +201,17 @@ public class MainApplicationFrame extends JFrame {
     private JMenu createLanguageChangeMenu() {
         JMenu languageMenu = new JMenu(LocalizationManager.getInstance().getString("menu.language"));
 
-        JMenuItem languageRU = new JMenuItem(LocalizationManager.getInstance().getString("language.ru"));
-        languageRU.addActionListener(e -> switchLanguage(new Locale("ru")));
+        JMenuItem languageRU = new JMenuItem("Русский");
+        languageRU.addActionListener(e -> switchLanguage(Locale.of("ru")));
 
-        JMenuItem languageEN = new JMenuItem(LocalizationManager.getInstance().getString("language.en"));
-        languageEN.addActionListener(e -> switchLanguage(new Locale("en")));
+        JMenuItem languageEN = new JMenuItem("English");
+        languageEN.addActionListener(e -> switchLanguage(Locale.of("en")));
 
-        JMenuItem languageZH = new JMenuItem(LocalizationManager.getInstance().getString("language.zh"));
-        languageZH.addActionListener(e -> switchLanguage(new Locale("zh")));
+        JMenuItem languageZH = new JMenuItem("中文");
+        languageZH.addActionListener(e -> switchLanguage(Locale.of("zh")));
 
-        JMenuItem languageHEX = new JMenuItem(LocalizationManager.getInstance().getString("language.hex"));
-        languageHEX.addActionListener(e -> switchLanguage(new Locale("hex")));
+        JMenuItem languageHEX = new JMenuItem("16D180D0B8D187D0BDD18BD0B9");
+        languageHEX.addActionListener(e -> switchLanguage(Locale.of("hex")));
 
         languageMenu.add(languageRU);
         languageMenu.add(languageEN);

@@ -1,4 +1,4 @@
-package gui;
+package model;
 
 /**
  * Класс RobotsPosition представляет координаты позиции робота на игровом поле.

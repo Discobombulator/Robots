@@ -25,7 +25,7 @@
                         <manifest>
                             <!-- Делаем jar исполняемым,
                                  для этого указываем класс для запуска -->
-                            <mainClass>gui.RobotsProgram</mainClass>
+                            <mainClass>model.RobotsProgram</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

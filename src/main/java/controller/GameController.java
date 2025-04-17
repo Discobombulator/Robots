@@ -1,5 +1,7 @@
-package gui;
+package controller;
 
+
+import model.RobotModel;
 
 import java.util.Timer;
 import java.util.TimerTask;
