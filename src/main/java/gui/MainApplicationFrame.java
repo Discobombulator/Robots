@@ -155,13 +155,14 @@ public class MainApplicationFrame extends JFrame {
      * смена режима отображения окна на универсальный.
      */
     private JMenuItem createFeelMenu() {
-        JMenuItem crossplatformLookAndFeel = new JMenuItem(LocalizationManager.getInstance().getString("create.look.menu2")
+        JMenuItem LookAndFeel = new JMenuItem(LocalizationManager.getInstance()
+                .getString("create.look.menu2")
                 , KeyEvent.VK_S);
-        crossplatformLookAndFeel.addActionListener((event) -> {
+        LookAndFeel.addActionListener((event) -> {
             setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             this.invalidate();
         });
-        return crossplatformLookAndFeel;
+        return LookAndFeel;
     }
 
     /**
@@ -218,18 +219,22 @@ public class MainApplicationFrame extends JFrame {
 
         return languageMenu;
     }
+
     /**
      * Метод для смены языка
      */
     private void switchLanguage(Locale locale) {
         LocalizationManager.getInstance().setLocale(locale);
 
+        // Обновление локализованных надписей стандартных кнопок
+        UIManager.put("OptionPane.yesButtonText", LocalizationManager.getInstance().getString("yes"));
+        UIManager.put("OptionPane.noButtonText", LocalizationManager.getInstance().getString("no"));
+
         // Обнови всё окно: пересоздай меню и перерисуй интерфейс
         setJMenuBar(generateMenuBar());
         revalidate();
         repaint();
     }
-
 
 
     /**
