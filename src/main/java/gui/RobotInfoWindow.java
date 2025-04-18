@@ -30,7 +30,6 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
         super(LocalizationManager.getInstance().getString("menu.robot"), true, true, true, true);
         this.robotModel = model;
         robotModel.addPropertyChangeListener(this);
-
         // Подписываемся на смену локали
         LocalizationManager.getInstance().addPropertyChangeListener(this);
 
@@ -69,6 +68,8 @@ public class RobotInfoWindow extends JInternalFrame implements PropertyChangeLis
         if ("locale".equals(evt.getPropertyName())) {
             // Обновляем заголовок окна
             setTitle(LocalizationManager.getInstance().getString("menu.robot"));
+
+            updateLabels();
         }
         if ("position".equals(evt.getPropertyName())) {
             SwingUtilities.invokeLater(this::updateLabels);
