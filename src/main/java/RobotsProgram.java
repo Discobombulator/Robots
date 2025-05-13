@@ -1,5 +1,3 @@
-package logic;
-
 import gui.MainApplicationFrame;
 
 import java.beans.PropertyVetoException;
