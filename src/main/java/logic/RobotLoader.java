@@ -18,7 +18,7 @@ public class RobotLoader {
      * @return экземпляр класса, реализующего ExternalRobot
      * @throws Exception если произошла ошибка загрузки
      */
-    public static ExternalRobot loadRobotFromJar(File jarFile, String className) throws Exception {
+    public ExternalRobot loadRobotFromJar(File jarFile, String className) throws Exception {
         URL jarUrl = jarFile.toURI().toURL();
         URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl});
         Class<?> robotClass = classLoader.loadClass(className);
@@ -30,7 +30,7 @@ public class RobotLoader {
      * @param title заголовок диалогового окна
      * @return настроенный JFileChooser
      */
-    public static JFileChooser createJarFileChooser(String title) {
+    public JFileChooser createJarFileChooser(String title) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(title);
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {

@@ -28,7 +28,7 @@ public class MainApplicationFrame extends JFrame {
     private final WindowsSaver windowsSaver = new WindowsSaver();
     // Общий экземпляр модели робота, который используется в RobotInfoWindow и в GameWindow (через GameVisualizer)
     private final RobotModel sharedRobotModel = new RobotModel();
-
+    private final RobotLoader robotLoader = new RobotLoader();
     private final GameWindow gameWindow;
     private final LogWindow logWindow = createLogWindow();
     private final RobotInfoWindow robotInfoWindow;
@@ -124,13 +124,13 @@ public class MainApplicationFrame extends JFrame {
      * Загружает внешнюю реализацию робота из JAR-файла
      */
     private void loadExternalRobot() {
-        JFileChooser fileChooser = RobotLoader.createJarFileChooser(
+        JFileChooser fileChooser = robotLoader.createJarFileChooser(
                 LocalizationManager.getInstance().getString("menu.robot.load.dialog"));
 
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 File jarFile = fileChooser.getSelectedFile();
-                ExternalRobot robot = RobotLoader.loadRobotFromJar(jarFile, "logic.CustomRobot");
+                ExternalRobot robot = robotLoader.loadRobotFromJar(jarFile, "logic.CustomRobot");
 
                 sharedRobotModel.setExternalRobot(robot);
                 gameWindow.getVisualizer().setExternalRobot(robot);
