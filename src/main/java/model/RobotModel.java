@@ -8,6 +8,7 @@ import java.beans.PropertyChangeSupport;
  * Использует механизм {@link PropertyChangeSupport} для уведомления подписчиков об изменениях состояния.
  */
 public class RobotModel {
+    private ExternalRobot externalRobot;
     private double positionX = 100;
     private double positionY = 100;
     private double direction = 0; // в радианах
@@ -52,6 +53,13 @@ public class RobotModel {
     }
 
     /**
+     * Устанавливает обновленный функционал из jar для робота.
+     */
+    public void setExternalRobot(ExternalRobot externalRobot) {
+        this.externalRobot = externalRobot;
+    }
+
+    /**
      * Устанавливает целевую позицию для робота.
      * Уведомляет подписчиков об изменении целевых координат.
      */
@@ -69,12 +77,13 @@ public class RobotModel {
      * Вычисляет новое положение и направление робота.
      */
     public void update(double duration) {
-
         double distance = Math.hypot(targetX - positionX, targetY - positionY);
         if (distance < 0.5) return;
 
-        final double maxVelocity = 0.1;
-        final double maxAngularVelocity = 0.001;
+        final double maxVelocity = externalRobot != null ?
+                externalRobot.getMaxVelocity() : 0.1;
+        final double maxAngularVelocity = externalRobot != null ?
+                externalRobot.getMaxAngularVelocity() : 0.001;
         double angleToTarget = Math.atan2(targetY - positionY, targetX - positionX);
         angleToTarget = normalizeAngle(angleToTarget);
 

@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import log.LogChangeListener;
 import log.LogEntry;
 import log.LogWindowSource;
-import model.LocalizationManager;
+import logic.LocalizationManager;
 
 /**
  * Окно протокола работы приложения.

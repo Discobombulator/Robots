@@ -1,6 +1,6 @@
 package gui;
 
-import model.LocalizationManager;
+import logic.LocalizationManager;
 import model.RobotModel;
 
 import javax.swing.*;

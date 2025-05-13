@@ -4,13 +4,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Locale;
 
 import log.Logger;
-import model.LocalizationManager;
+import logic.RobotLoader;
+import model.ExternalRobot;
+import logic.LocalizationManager;
 import model.RobotModel;
-import model.WindowsSaver;
+import logic.WindowsSaver;
 
 /**
  * Класс MainApplicationFrame является главным окном приложения.
@@ -99,6 +104,65 @@ public class MainApplicationFrame extends JFrame {
         frame.setVisible(true);
     }
 
+
+    /**
+     * Создает меню для загрузки внешних роботов
+     * @return JMenu с элементами для работы с внешними роботами
+     */
+    private JMenu createRobotMenu() {
+        JMenu robotMenu = new JMenu(LocalizationManager.getInstance().getString("menu.robot.load"));
+
+        JMenuItem loadRobotItem = new JMenuItem(
+                LocalizationManager.getInstance().getString("menu.robot.load.jar"));
+        loadRobotItem.addActionListener(e -> loadExternalRobot());
+        robotMenu.add(loadRobotItem);
+
+        return robotMenu;
+    }
+
+    /**
+     * Загружает внешнюю реализацию робота из JAR-файла
+     */
+    private void loadExternalRobot() {
+        JFileChooser fileChooser = RobotLoader.createJarFileChooser(
+                LocalizationManager.getInstance().getString("menu.robot.load.dialog"));
+
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                File jarFile = fileChooser.getSelectedFile();
+                ExternalRobot robot = RobotLoader.loadRobotFromJar(jarFile, "logic.CustomRobot");
+
+                sharedRobotModel.setExternalRobot(robot);
+                gameWindow.getVisualizer().setExternalRobot(robot);
+
+                showSuccessMessage();
+            } catch (Exception ex) {
+                Logger.error("Failed to load external robot: " + ex.getMessage());
+                showErrorMessage();
+            }
+        }
+    }
+
+    /**
+     * Показывает сообщение об успешной загрузке робота
+     */
+    private void showSuccessMessage() {
+        JOptionPane.showMessageDialog(this,
+                LocalizationManager.getInstance().getString("menu.robot.load.success"),
+                LocalizationManager.getInstance().getString("menu.robot.load.title"),
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Показывает сообщение об ошибке загрузки робота
+     */
+    private void showErrorMessage() {
+        JOptionPane.showMessageDialog(this,
+                LocalizationManager.getInstance().getString("menu.robot.load.error"),
+                LocalizationManager.getInstance().getString("menu.robot.load.title"),
+                JOptionPane.ERROR_MESSAGE);
+    }
+
     /**
      * Создает строку меню приложения. Меню включает в себя пункты смены режима отображения,
      * тестовые команды и пункт выхода.
@@ -107,8 +171,8 @@ public class MainApplicationFrame extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(createLookAndFeelMenu());
         menuBar.add(createTestMenu());
+        menuBar.add(createRobotMenu()); // Добавляем новое меню
         menuBar.add(createLanguageChangeMenu());
-
         JMenu fileMenu = new JMenu(LocalizationManager.getInstance().getString("menu.file"));
         JMenuItem exitItem = new JMenuItem(LocalizationManager.getInstance().getString("menu.exit"));
         exitItem.addActionListener(e -> {

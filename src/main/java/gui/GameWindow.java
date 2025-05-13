@@ -1,7 +1,6 @@
 package gui;
 
-import controller.GameController;
-import model.LocalizationManager;
+import logic.LocalizationManager;
 import model.RobotModel;
 
 import java.awt.BorderLayout;
@@ -20,6 +19,7 @@ public class GameWindow extends JInternalFrame implements PropertyChangeListener
      * Массив данных окна: [x, y, width, height, state].
      */
     private int[] gameData = new int[]{100, 100, 1100, 440, 1};
+    private GameVisualizer visualizer;
 
     /**
      * Конструктор окна игрового поля.
@@ -29,24 +29,19 @@ public class GameWindow extends JInternalFrame implements PropertyChangeListener
      * @throws PropertyVetoException если установка икон (свернутости) окна не разрешена
      */
     public GameWindow(RobotModel model) throws PropertyVetoException {
-        super(LocalizationManager.getInstance().getString("game.title")
-                , true, true, true, true);
+        super(LocalizationManager.getInstance().getString("game.title"),
+                true, true, true, true);
 
         addPropertyChangeListener(this);
-
-        // Подписываемся на смену локали
         LocalizationManager.getInstance().addPropertyChangeListener(this);
 
         setSize(gameData[2], gameData[3]);
         setLocation(gameData[0], gameData[1]);
         setResizable(true);
 
-        // Создаем визуализатор (View)
-        GameVisualizer visualizer = new GameVisualizer(model);
+        // Инициализация визуализатора
+        this.visualizer = new GameVisualizer(model);
         visualizer.setPreferredSize(new Dimension(1100, 440));
-
-        // Создаем контроллер (Presenter), передаем модель и вьюшку
-        GameController controller = new GameController(model);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(visualizer, BorderLayout.CENTER);
@@ -67,6 +62,12 @@ public class GameWindow extends JInternalFrame implements PropertyChangeListener
      */
     public int[] getGameData() {
         return gameData;
+    }
+    /**
+     * Возвращает обновленный функционал из jar для робота.
+     */
+    public GameVisualizer getVisualizer() {
+        return visualizer;
     }
 
     @Override

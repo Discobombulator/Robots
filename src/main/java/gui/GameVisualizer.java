@@ -1,6 +1,7 @@
 package gui;
 
 import controller.GameController;
+import model.ExternalRobot;
 import model.RobotModel;
 
 import java.awt.*;
@@ -19,6 +20,14 @@ import javax.swing.JPanel;
 public class GameVisualizer extends JPanel implements PropertyChangeListener {
     private final GameController controller;
     private final RobotModel model;
+    private ExternalRobot externalRobot;
+
+    /**
+     * Устанавливает обновленный функционал из jar для робота.
+     */
+    public void setExternalRobot(ExternalRobot externalRobot) {
+        this.externalRobot = externalRobot;
+    }
 
     /**
      * Создает визуализатор игры и добавляет обработчик кликов для установки целевой точки.
@@ -55,17 +64,22 @@ public class GameVisualizer extends JPanel implements PropertyChangeListener {
      * Отрисовывает робота в заданной позиции и направлении.
      */
     private void drawRobot(Graphics2D g, int x, int y, double direction) {
-        AffineTransform oldTransform = g.getTransform();
-        g.rotate(direction, x, y);
-        g.setColor(Color.MAGENTA);
-        g.fillOval(x - 15, y - 5, 30, 10);
-        g.setColor(Color.BLACK);
-        g.drawOval(x - 15, y - 5, 30, 10);
-        g.setColor(Color.WHITE);
-        g.fillOval(x + 5, y - 2, 5, 5);
-        g.setColor(Color.BLACK);
-        g.drawOval(x + 5, y - 2, 5, 5);
-        g.setTransform(oldTransform);
+        if (externalRobot != null) {
+            externalRobot.drawRobot(g, x, y, direction);
+        } else {
+            // Стандартная отрисовка
+            AffineTransform oldTransform = g.getTransform();
+            g.rotate(direction, x, y);
+            g.setColor(Color.MAGENTA);
+            g.fillOval(x - 15, y - 5, 30, 10);
+            g.setColor(Color.BLACK);
+            g.drawOval(x - 15, y - 5, 30, 10);
+            g.setColor(Color.WHITE);
+            g.fillOval(x + 5, y - 2, 5, 5);
+            g.setColor(Color.BLACK);
+            g.drawOval(x + 5, y - 2, 5, 5);
+            g.setTransform(oldTransform);
+        }
     }
 
     /**
