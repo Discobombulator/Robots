@@ -1,6 +1,7 @@
 package logic;
 
-import model.ExternalRobot;
+import gui.ExternalRobotGui;
+import model.ExternalRobotModel;
 import javax.swing.*;
 import java.io.File;
 import java.net.URL;
@@ -18,11 +19,25 @@ public class RobotLoader {
      * @return экземпляр класса, реализующего ExternalRobot
      * @throws Exception если произошла ошибка загрузки
      */
-    public ExternalRobot loadRobotFromJar(File jarFile, String className) throws Exception {
+    public ExternalRobotModel loadRobotFromJarModel(File jarFile, String className) throws Exception {
         URL jarUrl = jarFile.toURI().toURL();
         URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl});
         Class<?> robotClass = classLoader.loadClass(className);
-        return (ExternalRobot) robotClass.getDeclaredConstructor().newInstance();
+        return (ExternalRobotModel) robotClass.getDeclaredConstructor().newInstance();
+    }
+
+    /**
+     * Загружает класс робота из указанного JAR-файла
+     * @param jarFile файл JAR с реализацией робота
+     * @param className полное имя класса (с пакетом) для загрузки
+     * @return экземпляр класса, реализующего ExternalRobot
+     * @throws Exception если произошла ошибка загрузки
+     */
+    public ExternalRobotGui loadRobotFromJarGui(File jarFile, String className) throws Exception {
+        URL jarUrl = jarFile.toURI().toURL();
+        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl});
+        Class<?> robotClass = classLoader.loadClass(className);
+        return (ExternalRobotGui) robotClass.getDeclaredConstructor().newInstance();
     }
 
     /**

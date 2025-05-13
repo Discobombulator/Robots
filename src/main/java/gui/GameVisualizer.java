@@ -1,7 +1,6 @@
 package gui;
 
 import controller.GameController;
-import model.ExternalRobot;
 import model.RobotModel;
 
 import java.awt.*;
@@ -20,13 +19,13 @@ import javax.swing.JPanel;
 public class GameVisualizer extends JPanel implements PropertyChangeListener {
     private final GameController controller;
     private final RobotModel model;
-    private ExternalRobot externalRobot;
+    private ExternalRobotGui externalRobotGui;
 
     /**
      * Устанавливает обновленный функционал из jar для робота.
      */
-    public void setExternalRobot(ExternalRobot externalRobot) {
-        this.externalRobot = externalRobot;
+    public void setExternalRobot(ExternalRobotGui externalRobotGui) {
+        this.externalRobotGui = externalRobotGui;
     }
 
     /**
@@ -64,8 +63,8 @@ public class GameVisualizer extends JPanel implements PropertyChangeListener {
      * Отрисовывает робота в заданной позиции и направлении.
      */
     private void drawRobot(Graphics2D g, int x, int y, double direction) {
-        if (externalRobot != null) {
-            externalRobot.drawRobot(g, x, y, direction);
+        if (externalRobotGui != null) {
+            externalRobotGui.drawRobot(g, x, y, direction);
         } else {
             // Стандартная отрисовка
             AffineTransform oldTransform = g.getTransform();

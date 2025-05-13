@@ -1,9 +1,10 @@
 package logic;
-import model.ExternalRobot;
+import gui.ExternalRobotGui;
+import model.ExternalRobotModel;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
-public class CustomRobot implements ExternalRobot {
+public class CustomRobot implements ExternalRobotModel, ExternalRobotGui {
     @Override
     public double getMaxVelocity() { return 0.15; }
 

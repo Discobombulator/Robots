@@ -6,13 +6,11 @@ import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Locale;
 
 import log.Logger;
 import logic.RobotLoader;
-import model.ExternalRobot;
+import model.ExternalRobotModel;
 import logic.LocalizationManager;
 import model.RobotModel;
 import logic.WindowsSaver;
@@ -130,10 +128,11 @@ public class MainApplicationFrame extends JFrame {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 File jarFile = fileChooser.getSelectedFile();
-                ExternalRobot robot = robotLoader.loadRobotFromJar(jarFile, "logic.CustomRobot");
+                ExternalRobotModel robotModel = robotLoader.loadRobotFromJarModel(jarFile, "logic.CustomRobot");
+                ExternalRobotGui robotGui = robotLoader.loadRobotFromJarGui(jarFile, "logic.CustomRobot");
 
-                sharedRobotModel.setExternalRobot(robot);
-                gameWindow.getVisualizer().setExternalRobot(robot);
+                sharedRobotModel.setExternalRobot(robotModel);
+                gameWindow.getVisualizer().setExternalRobot(robotGui);
 
                 showSuccessMessage();
             } catch (Exception ex) {
@@ -141,6 +140,7 @@ public class MainApplicationFrame extends JFrame {
                 showErrorMessage();
             }
         }
+        repaint();
     }
 
     /**
